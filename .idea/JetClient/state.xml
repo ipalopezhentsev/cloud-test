@@ -1,6 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JetClientState">
+    <option name="draftsState">
+      <draftsState>
+        <option name="requests">
+          <list>
+            <requestState>
+              <option name="auth">
+                <authState>
+                  <option name="basic">
+                    <basicAuthState>
+                      <option name="pass" value="08cf2056-dae7-4424-b115-74787b3ce0c7" />
+                      <option name="username" value="user" />
+                    </basicAuthState>
+                  </option>
+                  <option name="type" value="BASIC" />
+                </authState>
+              </option>
+              <option name="id" value="dbc2adba-0f4f-4814-81b3-9acb521d8877" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft" />
+              <option name="url" value="http://localhost:8080/api/testView" />
+            </requestState>
+          </list>
+        </option>
+      </draftsState>
+    </option>
     <option name="id" value="92af9fa0-3501-410b-a3e0-67b04e8bab02" />
   </component>
 </project>

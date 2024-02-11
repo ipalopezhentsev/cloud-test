@@ -3,12 +3,40 @@
  */
 package cloud.test;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+
+@SpringBootApplication
+@EnableWebSecurity
 public class Server {
-    public String getGreeting() {
-        return "Hello World from Serevr!";
+    public static void main(String[] args) {
+        SpringApplication.run(Server.class, args);
     }
 
-    public static void main(String[] args) {
-        System.out.println(new Server().getGreeting());
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.authorizeHttpRequests(auth -> {
+            auth.requestMatchers("/actuator/prometheus").permitAll();
+            auth.requestMatchers("/admin/**").hasRole("admin");
+            auth.anyRequest().permitAll();
+        });
+        //without this, nothing will work even if we pass basic auth credentials, because it will be ignored and
+        //users will be switched to anonymousUser, and we don't allow anonymous except actuator
+//        httpSecurity.httpBasic(withDefaults());
+        return httpSecurity.build();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager();
     }
 }

@@ -3,12 +3,16 @@
  */
 package cloud.test;
 
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+
+@SpringBootApplication
 public class Client {
-    public String getGreeting() {
-        return "Hello World from Client!";
-    }
 
     public static void main(String[] args) {
-        System.out.println(new Client().getGreeting());
+        new SpringApplicationBuilder(Client.class)
+                .web(WebApplicationType.NONE)
+                .run(args);
     }
 }
