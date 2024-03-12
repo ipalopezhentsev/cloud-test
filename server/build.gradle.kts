@@ -41,6 +41,6 @@ jib {
         image = "eclipse-temurin:21-jre"
     }
     to {
-		image = "iliks-server:2"
+		image = "iliks-server:3"
 	}
 }

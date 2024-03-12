@@ -17,13 +17,13 @@ spec:
     spec:
       containers:
         - name: iliks-server
-          image: iliks-server:2
+          image: iliks-server:3
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           resources:
             limits:
-              cpu: 0.5
+              cpu: 1.0
               memory: 500Mi
 
 ---
