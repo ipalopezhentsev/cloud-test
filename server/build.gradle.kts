@@ -1,5 +1,5 @@
 plugins {
-application
+    application
 	id("org.springframework.boot")
 	id("io.spring.dependency-management")
 	id("com.google.cloud.tools.jib")
@@ -41,6 +41,6 @@ jib {
         image = "eclipse-temurin:21-jre"
     }
     to {
-		image = "iliks-server"
+		image = "iliks-server:2"
 	}
 }

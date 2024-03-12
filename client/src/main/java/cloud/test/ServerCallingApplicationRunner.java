@@ -2,6 +2,7 @@ package cloud.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -12,9 +13,13 @@ public class ServerCallingApplicationRunner implements ApplicationRunner {
     private static final Logger log = LoggerFactory.getLogger(ServerCallingApplicationRunner.class);
     private final RestClient restClient;
 
-    public ServerCallingApplicationRunner(RestClient.Builder restClient) {
+    public ServerCallingApplicationRunner(
+            RestClient.Builder restClient,
+            @Value("${SERVER_ADDR}")
+            String server
+    ) {
         this.restClient = restClient
-                .baseUrl("http://localhost:8080/api/")
+                .baseUrl("http://" + server + ":8080/api/")
                 .build();
     }
 

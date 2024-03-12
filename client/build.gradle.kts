@@ -10,7 +10,6 @@ repositories {
 }
 
 dependencies {
-//    implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -36,6 +35,6 @@ jib {
         image = "eclipse-temurin:21-jre"
     }
     to {
-        image = "iliks-client"
+        image = "iliks-client:2"
     }
 }
