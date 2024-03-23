@@ -3,7 +3,7 @@ apiVersion: apps/v1
 metadata:
   name: server-test
 spec:
-  replicas: 2
+  replicas: 1
   minReadySeconds: 5
   selector:
     matchLabels:
@@ -16,8 +16,9 @@ spec:
         app: server-test
     spec:
       containers:
+        #todo: add here probes
         - name: iliks-server
-          image: iliks-server:3
+          image: iliks-server:4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -25,6 +26,25 @@ spec:
             limits:
               cpu: 1.0
               memory: 500Mi
+          livenessProbe:
+            httpGet:
+              path: "/actuator/health/livenessState"
+              port: 8080
+            periodSeconds: 1
+            failureThreshold: 1
+          startupProbe:
+            httpGet:
+              path: "/actuator/health/livenessState"
+              port: 8080
+            initialDelaySeconds: 4
+          #without this, k8s svc will send traffic to pod which haven't yet finished
+          #their AppRunners which sleep for 20s and so client calls will fail.
+          readinessProbe:
+            httpGet:
+              path: "/actuator/health/readinessState"
+              port: 8080
+
+
 
 ---
 
@@ -35,7 +55,22 @@ metadata:
 spec:
   selector:
     app: server-test
+# accessible only inside cluster
+#  type: ClusterIP
+# accessible also outside cluster
   type: LoadBalancer
+#  type: NodePort
   ports:
     - port: 8080
       protocol: TCP
+
+---
+
+#kind: Ingress
+#apiVersion: v1
+#metadata:
+#  name:
+#spec:
+#  ingressClassName: todo
+#  rules:
+#  tls:

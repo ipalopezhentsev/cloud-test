@@ -3,7 +3,7 @@ apiVersion: apps/v1
 metadata:
   name: client-test
 spec:
-  replicas: 500
+  replicas: 8
   minReadySeconds: 5
   selector:
     matchLabels:
