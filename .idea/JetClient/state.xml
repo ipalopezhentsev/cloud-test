@@ -32,13 +32,13 @@
               <option name="id" value="d226bf15-6a5f-4ef6-bb79-d84e8c75ba95" />
               <option name="method" value="GET" />
               <option name="name" value="Liveness" />
-              <option name="url" value="http://localhost:8080/actuator/health/livenessState" />
+              <option name="url" value="http://localhost:8080/actuator/health/liveness" />
             </requestState>
             <requestState>
               <option name="id" value="17c48018-14d0-459e-a2b3-7b2168997464" />
               <option name="method" value="GET" />
               <option name="name" value="Readiness" />
-              <option name="url" value="http://localhost:8080/actuator/health/readinessState" />
+              <option name="url" value="http://localhost:8080/actuator/health/readiness" />
             </requestState>
           </list>
         </option>

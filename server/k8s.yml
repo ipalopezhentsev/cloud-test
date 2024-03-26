@@ -1,24 +1,24 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: server-test
+  name: server-test1
 spec:
   replicas: 1
   minReadySeconds: 5
   selector:
     matchLabels:
-      app: server-test
+      app: server-test1
   strategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
-        app: server-test
+        app: server-test1
     spec:
       containers:
         #todo: add here probes
-        - name: iliks-server
-          image: iliks-server:4
+        - name: iliks-server1
+          image: iliks-server:6
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -28,49 +28,149 @@ spec:
               memory: 500Mi
           livenessProbe:
             httpGet:
-              path: "/actuator/health/livenessState"
+              path: "/actuator/health/liveness"
               port: 8080
             periodSeconds: 1
             failureThreshold: 1
           startupProbe:
             httpGet:
-              path: "/actuator/health/livenessState"
+              path: "/actuator/health/liveness"
               port: 8080
             initialDelaySeconds: 4
           #without this, k8s svc will send traffic to pod which haven't yet finished
           #their AppRunners which sleep for 20s and so client calls will fail.
           readinessProbe:
             httpGet:
-              path: "/actuator/health/readinessState"
+              path: "/actuator/health/readiness"
               port: 8080
+          env:
+            - name: app.name
+              value: svc1
 
-
+---
+#TODO: make helm template as only one property differs from svc1
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: server-test2
+spec:
+  replicas: 1
+  minReadySeconds: 5
+  selector:
+    matchLabels:
+      app: server-test2
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: server-test2
+    spec:
+      containers:
+        #todo: add here probes
+        - name: iliks-server2
+          image: iliks-server:6
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: 1.0
+              memory: 500Mi
+          livenessProbe:
+            httpGet:
+              path: "/actuator/health/liveness"
+              port: 8080
+            periodSeconds: 1
+            failureThreshold: 1
+          startupProbe:
+            httpGet:
+              path: "/actuator/health/liveness"
+              port: 8080
+            initialDelaySeconds: 4
+          #without this, k8s svc will send traffic to pod which haven't yet finished
+          #their AppRunners which sleep for 20s and so client calls will fail.
+          readinessProbe:
+            httpGet:
+              path: "/actuator/health/readiness"
+              port: 8080
+          env:
+            - name: app.name
+              value: svc2
 
 ---
 
 kind: Service
 apiVersion: v1
 metadata:
-  name: server-svc
+  name: server-svc1
 spec:
   selector:
-    app: server-test
-# accessible only inside cluster
-#  type: ClusterIP
+    app: server-test1
+# accessible only inside cluster & for ingress
+  type: ClusterIP
 # accessible also outside cluster
-  type: LoadBalancer
+#  type: LoadBalancer
 #  type: NodePort
   ports:
     - port: 8080
       protocol: TCP
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: server-svc2
+spec:
+  selector:
+    app: server-test2
+  # accessible only inside cluster
+  type: ClusterIP
+  # accessible also outside cluster
+#  type: LoadBalancer
+  #  type: NodePort
+  ports:
+    - port: 8081
+      targetPort: 8080
+      protocol: TCP
 
 ---
 
-#kind: Ingress
-#apiVersion: v1
-#metadata:
-#  name:
-#spec:
-#  ingressClassName: todo
-#  rules:
+#allows accessing both svc's from host machine via http://localhost/svc1/... and http://localhost/svc2/...
+#for this to work, you first have to install nginx controller:
+#https://kubernetes.github.io/ingress-nginx/deploy/#quick-start
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: test-ing
+  #https://kubernetes.github.io/ingress-nginx/examples/rewrite/
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+#requires nginx-ingress controller installed
+  ingressClassName: nginx
+  rules:
+    - host: localhost
+      http:
+        paths:
+          #without the regexp it won't transfer url params like "/api/testView" from source urls
+          #like http://localhost/svc1/api/testView (and also you need annotations above for this)
+          - path: /svc1(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: server-svc1
+                port:
+                  number: 8080
+    - host: localhost
+      http:
+        paths:
+          - path: /svc2(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: server-svc2
+                port:
+                  number: 8081
 #  tls:
