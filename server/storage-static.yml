@@ -1,0 +1,64 @@
+#test of static storage provisioning
+kind: Pod
+apiVersion: v1
+metadata:
+  name: pod-static-claim1
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - name: test-volume1
+          mountPath: /v1
+  volumes:
+    - name: test-volume1
+      persistentVolumeClaim:
+        claimName: static-claim
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: pod-static-claim2
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - name: test-volume2
+          mountPath: /v2
+  volumes:
+    - name: test-volume2
+      persistentVolumeClaim:
+        claimName: static-claim
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: static-claim
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 2Mi
+    limits:
+      storage: 5Mi
+  #explicit indication that we do not want dynamic provisioning.
+  #if we omit this, then we can get dynamic provisioning if there is a default storage class in cluster
+  storageClassName: ""
+  #volumeName:
+---
+#comment it first to see that pods are not starting because their storage claims are not yet provided.
+#also try initially setting capacity lower than claim request
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: small-vol
+spec:
+  accessModes: [ReadWriteMany]
+  capacity:
+    storage: 3Mi
+  hostPath:
+    path: /mnt/d/t
+    type: DirectoryOrCreate

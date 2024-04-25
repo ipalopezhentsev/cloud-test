@@ -1,0 +1,52 @@
+#test alternative to hostPath in local Docker k8s
+kind: Pod
+apiVersion: v1
+metadata:
+  name: pod-local-storage
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - name: test-volume1
+          mountPath: /v1
+  volumes:
+    - name: test-volume1
+      persistentVolumeClaim:
+        claimName: local-claim
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: local-claim
+spec:
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 2Mi
+    limits:
+      storage: 5Mi
+  storageClassName: ""
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: local-vol
+spec:
+  accessModes: [ReadWriteMany]
+  capacity:
+    storage: 3Mi
+  local:
+    #hmm, path works, files stored there persist over pod delete/recreation, but I don't see
+    #them on host and inside the docker k8s wsl distros.
+    #also it doesn't preserve over host restart...
+    path: /mnt/d/t
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - docker-desktop

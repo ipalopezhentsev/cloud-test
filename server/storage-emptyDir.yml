@@ -1,0 +1,44 @@
+#test that if two containers of one pod want to share some files they need to use emptyDir volumes,
+#as they won't see each other by default despite they are on one node.
+#test of static storage provisioning
+
+
+#if we log in to one container, we'll see only its file but not file from other container in the pod
+kind: Pod
+apiVersion: v1
+metadata:
+  name: pod-2containers-no-volume
+spec:
+  containers:
+    - name: busybox1
+      image: busybox
+      command: ["sh", "-c", "touch /from-cont1 && sleep infinity"]
+    - name: busybox2
+      image: busybox
+      command: ["sh", "-c", "touch /from-cont2 && sleep infinity"]
+
+---
+#if we log in to one container, we'll see files from the second container too
+kind: Pod
+apiVersion: v1
+metadata:
+  name: pod-2containers-emptydirvol
+spec:
+  containers:
+    - name: busybox1
+      image: busybox
+      command: ["sh", "-c", "touch /vol/from-cont1 && sleep infinity"]
+      volumeMounts:
+        - name: test-emptydir
+          mountPath: /vol
+    - name: busybox2
+      image: busybox
+      command: ["sh", "-c", "touch /vol/from-cont2 && sleep infinity"]
+      volumeMounts:
+        - name: test-emptydir
+          mountPath: /vol
+  volumes:
+    - name: test-emptydir
+      emptyDir:
+        #is not honored on docker desktop...
+        sizeLimit: 10Mi
