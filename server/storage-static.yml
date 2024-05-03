@@ -60,5 +60,6 @@ spec:
   capacity:
     storage: 3Mi
   hostPath:
-    path: /mnt/d/t
+    #path must not be in /run/desktop/mnt/host/wsl, it's ram disk, erased on host restart
+    path: /run/desktop/mnt/host/d/vol
     type: DirectoryOrCreate

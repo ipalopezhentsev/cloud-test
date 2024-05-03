@@ -38,10 +38,9 @@ spec:
   capacity:
     storage: 3Mi
   local:
-    #hmm, path works, files stored there persist over pod delete/recreation, but I don't see
-    #them on host and inside the docker k8s wsl distros.
-    #also it doesn't preserve over host restart...
-    path: /mnt/d/t
+    #1. path must be created manually on host first
+    #2. path must not be in /run/desktop/mnt/host/wsl, it's ram disk, erased on host restart
+    path: /run/desktop/mnt/host/d/local-vol
   nodeAffinity:
     required:
       nodeSelectorTerms:
