@@ -1,0 +1,144 @@
+#unlike deployments, stateful sets use not PVC's but PVC _templates_ - so that
+#each pod is assigned its own PVC created by template - which is only for it and
+#its future copies.
+
+#main headless svc, mandatory for stateful set
+kind: Service
+apiVersion: v1
+metadata:
+  name: sset
+spec:
+  selector:
+    app: sset-test
+  #by default:
+  #type: ClusterIP
+  #makes headless svc:
+  clusterIP: None
+  ports:
+    - port: 80
+      name: web
+  #how to test: log in to one pod, do:
+  # nslookup sset-test-1.sset.default.svc.cluster.local
+  #it will find it (if it was too fast, give cluster DNS 30s to remove cached NXDOMAIN entry)
+  #so, pattern is <sset name>-N.<svc name>.<ns>.svc.cluster.local
+---
+#q: why such svc? to be able to access from outside the cluster only the specific pod, not random.
+#if we don't care about outside, then it's not needed, addr like sset-test-0.sset.default.svc.cluster.local works fine,
+#while sset.default.svc.cluster.local will do round-robin
+kind: Service
+apiVersion: v1
+metadata:
+  name: sset1
+spec:
+  selector:
+    app: sset-test
+    apps.kubernetes.io/pod-index: "0"
+  clusterIP: None
+  ports:
+    - port: 80
+      name: web
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: sset2
+spec:
+  selector:
+    app: sset-test
+    apps.kubernetes.io/pod-index: "1"
+  clusterIP: None
+  ports:
+    - port: 80
+      name: web
+---
+kind: StatefulSet
+apiVersion: apps/v1
+metadata:
+  name: sset-test
+spec:
+  minReadySeconds: 10
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sset-test
+  serviceName: "sset"
+  template:
+    metadata:
+      labels:
+        app: sset-test
+    spec:
+      terminationGracePeriodSeconds: 10
+      initContainers:
+        - name: create-html
+          image: busybox
+          command: ["sh", "-c", "echo hello from $HOSTNAME > /usr/share/nginx/html/index.html"]
+          volumeMounts:
+            - name: sset-pvc
+              mountPath: /usr/share/nginx/html
+      containers:
+        - name: nginx
+          image: registry.k8s.io/nginx-slim:0.8
+          ports:
+            - containerPort: 80
+              name: web
+          volumeMounts:
+            - name: sset-pvc
+              mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+    - metadata:
+        name: sset-pvc
+      spec:
+        #note it's ok here unlike for deployments, because each instance will have its own PVC
+        accessModes: ["ReadWriteOncePod"]
+        resources:
+          requests:
+            storage: 2Mi
+          limits:
+            storage: 5Mi
+        storageClassName: "hostpath"
+---
+#to expose outside of cluster...
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: sset-ing-random
+  #https://kubernetes.github.io/ingress-nginx/examples/rewrite/
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  #requires nginx-ingress controller installed
+  ingressClassName: nginx
+  rules:
+    #this one will redirect to random live instance of pod in stateful set, changes every couple of seconds
+    - host: localhost
+      http:
+        paths:
+          - path: /svc(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: sset
+                port:
+                  number: 80
+    #will redirect only to instance 0
+    - host: localhost
+      http:
+        paths:
+          - path: /svc1(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: sset1
+                port:
+                  number: 80
+    - host: localhost
+      http:
+        paths:
+          - path: /svc2(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: sset2
+                port:
+                  number: 80

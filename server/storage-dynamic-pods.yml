@@ -1,0 +1,52 @@
+#test of dynamic storage provisioning - each pod gets a volume - if claim allows sharing.
+#if it doesn't then pods need to have distinct claims
+kind: Pod
+apiVersion: v1
+metadata:
+  name: pod-dynamic-claim1
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - name: test-volume1
+          mountPath: /v1
+  volumes:
+    - name: test-volume1
+      persistentVolumeClaim:
+        claimName: dynamic-claim
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: pod-dynamic-claim2
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - name: test-volume2
+          mountPath: /v2
+  volumes:
+    - name: test-volume2
+      persistentVolumeClaim:
+        claimName: dynamic-claim
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: dynamic-claim
+spec:
+  #if you leave this, then only 1 pod will start, another will need its separate claim to start.
+  #accessModes: [ReadWriteOncePod]
+  #but with this, 1 pvc serves 2 pods (there's still 1:1 relation between pvc & pv)
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 2Mi
+    limits:
+      storage: 5Mi
+  #default name for built-in k8s in docker desktop
+  storageClassName: "hostpath"

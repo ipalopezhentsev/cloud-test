@@ -1,0 +1,46 @@
+#test of dynamic storage provisioning for deployments -
+#pods are considered 'same' and if one is deleted then its pv is reassigned to another pod
+#(if pvc allows 'many'). If you don't want reusing pv's you need statefulset.
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: depl-dynamic-claim
+spec:
+  replicas: 2
+  minReadySeconds: 5
+  selector:
+    matchLabels:
+      app: server-test1
+  template:
+    metadata:
+      labels:
+        app: server-test1
+    spec:
+      containers:
+        - name: busybox
+          image: busybox
+          command: ["sleep", "infinity"]
+          volumeMounts:
+            - name: test-volume1
+              mountPath: /v1
+      volumes:
+        - name: test-volume1
+          persistentVolumeClaim:
+            claimName: dynamic-claim
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: dynamic-claim
+spec:
+  #if you leave this, then only 1 pod will start, another will need its separate claim to start.
+#  accessModes: [ReadWriteOncePod]
+  #but with this, 1 pvc serves 2 pods (there's still 1:1 relation between pvc & pv)
+  accessModes: [ReadWriteMany]
+  resources:
+    requests:
+      storage: 2Mi
+    limits:
+      storage: 5Mi
+  #default name for built-in k8s in docker desktop
+  storageClassName: "hostpath"
