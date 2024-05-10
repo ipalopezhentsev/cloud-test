@@ -40,6 +40,12 @@
               <option name="name" value="Readiness" />
               <option name="url" value="http://localhost:8080/actuator/health/readiness" />
             </requestState>
+            <requestState>
+              <option name="id" value="50168cb5-af5a-4b76-b5ca-f51c00f3a2c1" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft 1" />
+              <option name="url" value="http://localhost/svc1/actuator/health" />
+            </requestState>
           </list>
         </option>
       </draftsState>

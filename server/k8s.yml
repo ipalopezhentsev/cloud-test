@@ -3,7 +3,10 @@ apiVersion: apps/v1
 metadata:
   name: server-test1
 spec:
-  replicas: 1
+#driven by hpa - Metrics API should be installed first.
+#if you use docker desktop k8s, this shows how:
+#https://dev.to/docker/enable-kubernetes-metrics-server-on-docker-desktop-5434
+#  replicas: 1
   minReadySeconds: 5
   selector:
     matchLabels:
@@ -22,8 +25,9 @@ spec:
           ports:
             - containerPort: 8080
           resources:
+#hpa looks at ratio of current dividied by rqs but we specified only limits - in this case k8s sets rqs equal to limits
             limits:
-              cpu: 1.0
+              cpu: 200m
               memory: 500Mi
           livenessProbe:
             httpGet:
@@ -35,7 +39,7 @@ spec:
             httpGet:
               path: "/actuator/health/liveness"
               port: 8080
-            initialDelaySeconds: 4
+            initialDelaySeconds: 100
           #without this, k8s svc will send traffic to pod which haven't yet finished
           #their AppRunners which sleep for 20s and so client calls will fail.
           readinessProbe:
@@ -99,7 +103,18 @@ spec:
               value: svc2
 
 ---
-
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+metadata:
+  name: hpa-svc1
+spec:
+  maxReplicas: 50
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: server-test1
+#by default will aim for 80% of cpu utilization
+---
 kind: Service
 apiVersion: v1
 metadata:

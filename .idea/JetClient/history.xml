@@ -6999,6 +6999,135 @@
             </responseState>
           </option>
         </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1715371198128" />
+          <option name="id" value="3e22e4a6-5b7b-40d1-a771-814533dfdfe3" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="50168cb5-af5a-4b76-b5ca-f51c00f3a2c1" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft 1" />
+              <option name="url" value="http://localhost/actuator/health" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="PGh0bWw+DQo8aGVhZD48dGl0bGU+NDA0IE5vdCBGb3VuZDwvdGl0bGU+PC9oZWFkPg0KPGJvZHk+DQo8Y2VudGVyPjxoMT40MDQgTm90IEZvdW5kPC9oMT48L2NlbnRlcj4NCjxocj48Y2VudGVyPm5naW54PC9jZW50ZXI+DQo8L2JvZHk+DQo8L2h0bWw+DQo=" />
+              <option name="bodyString" value="&lt;html&gt;&#10;&lt;head&gt;&lt;title&gt;404 Not Found&lt;/title&gt;&lt;/head&gt;&#10;&lt;body&gt;&#10;&lt;center&gt;&lt;h1&gt;404 Not Found&lt;/h1&gt;&lt;/center&gt;&#10;&lt;hr&gt;&lt;center&gt;nginx&lt;/center&gt;&#10;&lt;/body&gt;&#10;&lt;/html&gt;&#10;" />
+              <option name="code" value="404" />
+              <option name="contentType" value="text/html" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Fri, 10 May 2024 19:59:58 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="text/html" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Length" />
+                    <option name="value" value="146" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="keep-alive" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="3e22e4a6-5b7b-40d1-a771-814533dfdfe3" />
+              <option name="message" value="Not Found" />
+              <option name="prettyResponseType" value="HTML" />
+              <option name="previewType" value="HTML" />
+              <option name="rawBodyString" value="&lt;html&gt;&#10;&lt;head&gt;&lt;title&gt;404 Not Found&lt;/title&gt;&lt;/head&gt;&#10;&lt;body&gt;&#10;&lt;center&gt;&lt;h1&gt;404 Not Found&lt;/h1&gt;&lt;/center&gt;&#10;&lt;hr&gt;&lt;center&gt;nginx&lt;/center&gt;&#10;&lt;/body&gt;&#10;&lt;/html&gt;&#10;" />
+              <option name="size" value="146" />
+              <option name="time" value="4" />
+            </responseState>
+          </option>
+        </requestHistoryState>
+        <requestHistoryState>
+          <option name="dateTime" value="1715371208709" />
+          <option name="id" value="1470bd46-77dd-4ad0-b277-e5771cd2c39b" />
+          <option name="request">
+            <requestState>
+              <option name="id" value="50168cb5-af5a-4b76-b5ca-f51c00f3a2c1" />
+              <option name="method" value="GET" />
+              <option name="name" value="Draft 1" />
+              <option name="url" value="http://localhost/svc1/actuator/health" />
+            </requestState>
+          </option>
+          <option name="response">
+            <responseState>
+              <option name="bodyBytesBase64" value="eyJzdGF0dXMiOiJPVVRfT0ZfU0VSVklDRSIsImNvbXBvbmVudHMiOnsiZGlza1NwYWNlIjp7InN0YXR1cyI6IlVQIiwiZGV0YWlscyI6eyJ0b3RhbCI6MTA4MTEwMTE3NjgzMiwiZnJlZSI6MTAxNDQxNzI5NzQwOCwidGhyZXNob2xkIjoxMDQ4NTc2MCwicGF0aCI6Ii8uIiwiZXhpc3RzIjp0cnVlfX0sImxpdmVuZXNzU3RhdGUiOnsic3RhdHVzIjoiVVAifSwibXkiOnsic3RhdHVzIjoiT1VUX09GX1NFUlZJQ0UiLCJkZXRhaWxzIjp7InJlYXNvbiI6InRlc3QifX0sInBpbmciOnsic3RhdHVzIjoiVVAifSwicmVhZGluZXNzU3RhdGUiOnsic3RhdHVzIjoiVVAifX0sImdyb3VwcyI6WyJsaXZlbmVzcyIsInJlYWRpbmVzcyJdfQ==" />
+              <option name="bodyString" value="{&#10;  &quot;status&quot; : &quot;OUT_OF_SERVICE&quot;,&#10;  &quot;components&quot; : {&#10;    &quot;diskSpace&quot; : {&#10;      &quot;status&quot; : &quot;UP&quot;,&#10;      &quot;details&quot; : {&#10;        &quot;total&quot; : 1081101176832,&#10;        &quot;free&quot; : 1014417297408,&#10;        &quot;threshold&quot; : 10485760,&#10;        &quot;path&quot; : &quot;/.&quot;,&#10;        &quot;exists&quot; : true&#10;      }&#10;    },&#10;    &quot;livenessState&quot; : {&#10;      &quot;status&quot; : &quot;UP&quot;&#10;    },&#10;    &quot;my&quot; : {&#10;      &quot;status&quot; : &quot;OUT_OF_SERVICE&quot;,&#10;      &quot;details&quot; : {&#10;        &quot;reason&quot; : &quot;test&quot;&#10;      }&#10;    },&#10;    &quot;ping&quot; : {&#10;      &quot;status&quot; : &quot;UP&quot;&#10;    },&#10;    &quot;readinessState&quot; : {&#10;      &quot;status&quot; : &quot;UP&quot;&#10;    }&#10;  },&#10;  &quot;groups&quot; : [&#10;    &quot;liveness&quot;,&#10;    &quot;readiness&quot;&#10;  ]&#10;}" />
+              <option name="code" value="503" />
+              <option name="contentType" value="application/vnd.spring-boot.actuator.v3+json" />
+              <option name="headers">
+                <list>
+                  <headerState>
+                    <option name="key" value="Date" />
+                    <option name="value" value="Fri, 10 May 2024 20:00:08 GMT" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Content-Type" />
+                    <option name="value" value="application/vnd.spring-boot.actuator.v3+json" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Transfer-Encoding" />
+                    <option name="value" value="chunked" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Connection" />
+                    <option name="value" value="keep-alive" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Vary" />
+                    <option name="value" value="Origin" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Vary" />
+                    <option name="value" value="Access-Control-Request-Method" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Vary" />
+                    <option name="value" value="Access-Control-Request-Headers" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Content-Type-Options" />
+                    <option name="value" value="nosniff" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-XSS-Protection" />
+                    <option name="value" value="0" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Cache-Control" />
+                    <option name="value" value="no-cache, no-store, max-age=0, must-revalidate" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Pragma" />
+                    <option name="value" value="no-cache" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="Expires" />
+                    <option name="value" value="0" />
+                  </headerState>
+                  <headerState>
+                    <option name="key" value="X-Frame-Options" />
+                    <option name="value" value="DENY" />
+                  </headerState>
+                </list>
+              </option>
+              <option name="id" value="1470bd46-77dd-4ad0-b277-e5771cd2c39b" />
+              <option name="message" value="Service Unavailable" />
+              <option name="prettyResponseType" value="JSON" />
+              <option name="rawBodyString" value="{&quot;status&quot;:&quot;OUT_OF_SERVICE&quot;,&quot;components&quot;:{&quot;diskSpace&quot;:{&quot;status&quot;:&quot;UP&quot;,&quot;details&quot;:{&quot;total&quot;:1081101176832,&quot;free&quot;:1014417297408,&quot;threshold&quot;:10485760,&quot;path&quot;:&quot;/.&quot;,&quot;exists&quot;:true}},&quot;livenessState&quot;:{&quot;status&quot;:&quot;UP&quot;},&quot;my&quot;:{&quot;status&quot;:&quot;OUT_OF_SERVICE&quot;,&quot;details&quot;:{&quot;reason&quot;:&quot;test&quot;}},&quot;ping&quot;:{&quot;status&quot;:&quot;UP&quot;},&quot;readinessState&quot;:{&quot;status&quot;:&quot;UP&quot;}},&quot;groups&quot;:[&quot;liveness&quot;,&quot;readiness&quot;]}" />
+              <option name="size" value="355" />
+              <option name="time" value="13" />
+            </responseState>
+          </option>
+        </requestHistoryState>
       </list>
     </option>
   </component>

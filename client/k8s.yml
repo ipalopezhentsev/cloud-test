@@ -3,7 +3,7 @@ apiVersion: apps/v1
 metadata:
   name: client-test
 spec:
-  replicas: 8
+  replicas: 20
   minReadySeconds: 5
   selector:
     matchLabels:
@@ -17,14 +17,14 @@ spec:
     spec:
       containers:
         - name: iliks-client
-          image: iliks-client:2
+          image: iliks-client:4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           resources:
             limits:
-              cpu: 0.1
-              memory: 200Mi
+              cpu: 50m
+              memory: 120Mi
           env:
             - name: SERVER_ADDR
-              value: server-svc
+              value: "http://server-svc1:8080/api/"
