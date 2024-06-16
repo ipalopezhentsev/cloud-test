@@ -1,0 +1,18 @@
+services:
+  srv:
+    image: "iliks-server:6"
+    networks:
+      - net
+    ports:
+      - target: 8080
+        published: 81
+#note: client will give a lot of initial errors,
+#because server is slow to start
+  clnt:
+    image: "iliks-client:4"
+    networks:
+      - net
+    environment:
+      SERVER_ADDR: http://srv:8080/api/
+networks:
+  net:

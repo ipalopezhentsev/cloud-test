@@ -25,7 +25,7 @@ spec:
           ports:
             - containerPort: 8080
           resources:
-#hpa looks at ratio of current dividied by rqs but we specified only limits - in this case k8s sets rqs equal to limits
+#hpa looks at ratio of current divided by rqs, but we specified only limits - in this case k8s sets rqs equal to limits
             limits:
               cpu: 200m
               memory: 500Mi

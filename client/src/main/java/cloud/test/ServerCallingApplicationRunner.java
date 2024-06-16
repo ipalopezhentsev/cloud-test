@@ -20,6 +20,7 @@ public class ServerCallingApplicationRunner implements ApplicationRunner {
             @Value("${SERVER_ADDR}")
             String server
     ) {
+        log.info("SERVER_ADDR={}", server);
         this.restClient = restClient
                 .baseUrl(server)
                 .build();
@@ -34,8 +35,12 @@ public class ServerCallingApplicationRunner implements ApplicationRunner {
         exSvc.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         while (true) {
             exSvc.submit(()-> {
-                var obj = restClient.get().uri("testView").retrieve().body(Foo2.class);
-                log.info("Received: {}", obj);
+                try {
+                    var obj = restClient.get().uri("testView").retrieve().body(Foo2.class);
+                    log.info("Received: {}", obj);
+                } catch (Exception ex) {
+                    log.error("Error", ex);
+                }
             });
         }
     }
