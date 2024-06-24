@@ -1,0 +1,23 @@
+services:
+  svc1:
+    image: alpine
+    command: [ "sleep", "1d"]
+    networks:
+      - net_qqq
+    volumes:
+      - type: volume
+        source: vol
+        target: /vol
+  svc2:
+    image: alpine
+    command: [ "sleep", "1d"]
+    networks:
+      - net_qqq
+    volumes:
+      - type: volume
+        source: vol
+        target: /vol
+networks:
+  net_qqq:
+volumes:
+  vol:
