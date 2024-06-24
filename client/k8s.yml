@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: iliks-client
-          image: iliks-client:4
+          image: iliks-client:5
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

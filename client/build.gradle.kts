@@ -35,6 +35,9 @@ jib {
         image = "eclipse-temurin:21-jre"
     }
     to {
-        image = "iliks-client:4"
+        image = "iliks-client:5"
+    }
+    container {
+        user = "nobody"
     }
 }
