@@ -1,0 +1,10 @@
+# Default values for helm-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+clientReplicaCount: 20
+maxServerReplicaCount: 50
+serverImage: "iliks-server:7"
+clientImage: "iliks-client:5"
+serverPort: 8080
+ingressClassName: nginx

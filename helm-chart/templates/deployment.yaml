@@ -1,0 +1,150 @@
+{{- $relname := .Release.Name -}}
+{{- $serverName := printf "%s-server" $relname -}}
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ $serverName }}
+{{ include "labels" . | indent 2 }}
+spec:
+#driven by hpa - Metrics API should be installed first.
+#if you use docker desktop k8s, this shows how:
+#https://dev.to/docker/enable-kubernetes-metrics-server-on-docker-desktop-5434
+#  replicas: 1
+  minReadySeconds: 5
+  selector:
+    matchLabels:
+      app: {{ $serverName }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ $serverName }}
+    spec:
+      containers:
+        - name: server
+          image: {{ .Values.serverImage }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.serverPort }}
+          resources:
+#hpa looks at ratio of current divided by rqs, but we specified only limits - in this case k8s sets rqs equal to limits
+            limits:
+              cpu: 500m
+              memory: 500Mi
+          livenessProbe:
+            httpGet:
+              path: "/actuator/health/liveness"
+              port: {{ .Values.serverPort }}
+            periodSeconds: 5
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: "/actuator/health/liveness"
+              port: {{ .Values.serverPort }}
+            initialDelaySeconds: 100
+          #without this, k8s svc will send traffic to pod which haven't yet finished
+          #their AppRunners which sleep for 20s and so client calls will fail.
+          readinessProbe:
+            httpGet:
+              path: "/actuator/health/readiness"
+              port: {{ .Values.serverPort }}
+          env:
+            - name: app.name
+              value: {{ $relname }}
+---
+{{ $svcName := printf "%s-svc" .Release.Name }}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $svcName }}
+{{ include "labels" . | indent 2 }}
+spec:
+  selector:
+    app: {{ $serverName }}
+# accessible only inside cluster & for ingress
+  type: ClusterIP
+# accessible also outside cluster
+#  type: LoadBalancer
+#  type: NodePort
+  ports:
+    - port: {{ .Values.serverPort }}
+      name: http
+      protocol: TCP
+---
+{{- $clntName := printf "%s-clnt" $relname -}}
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ $clntName }}
+{{ include "labels" . | indent 2 }}
+spec:
+  replicas: {{ .Values.clientReplicaCount }}
+  minReadySeconds: 5
+  selector:
+    matchLabels:
+      app: {{ $clntName }}
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ $clntName }}
+    spec:
+      containers:
+        - name: client
+          image: {{ .Values.clientImage }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.serverPort }}
+          resources:
+            limits:
+              cpu: 50m
+              memory: 120Mi
+          env:
+            - name: SERVER_ADDR
+              value: http://{{$svcName}}:{{.Values.serverPort }}/api/
+---              
+#allows accessing both svc's from host machine via http://localhost/svc1/... and http://localhost/svc2/...
+#for this to work, you first have to install nginx ingress controller:
+#https://kubernetes.github.io/ingress-nginx/deploy/#quick-start
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{.Release.Name}}-ing
+{{ include "labels" . | indent 2 }}
+  #https://kubernetes.github.io/ingress-nginx/examples/rewrite/
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+#requires nginx-ingress controller installed
+  ingressClassName: {{.Values.ingressClassName}}
+  rules:
+  #host is name passed via http request payload, i.e. may be not an address to which client opened tcp connection
+  #(that one will be load balancer's IP)
+    - host: localhost
+      http:
+        paths:
+          #without the regexp it won't transfer url params like "/api/testView" from source urls
+          #like http://localhost/svc1/api/testView (and also you need annotations above for this)
+          - path: /{{$svcName}}(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{$svcName}}
+                port:
+                  name: http
+---
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+metadata:
+  name: {{$serverName}}-hpa
+{{ include "labels" . | indent 2 }}
+spec:
+  maxReplicas: {{.Values.maxServerReplicaCount}}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $serverName }}
+#by default will aim for 80% of cpu utilization
