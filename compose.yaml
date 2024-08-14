@@ -1,35 +1,25 @@
+include:
+  - infra.yaml
 services:
   srv:
     image: "iliks-server:7"
-    networks:
-      - net
+    secrets:
+    #appears in /run/secrets/my_secret
+      - my_secret
     ports:
       - target: 8080
         published: 81
     cpus: 0.1
 #note: client will give a lot of initial errors,
-#because server is slow to start
+#because server is slow to start, can set up health check...
   clnt:
     image: "iliks-client:5"
     depends_on:
       - srv
-    networks:
-      - net
     environment:
-      SERVER_ADDR: http://srv:8080/api/
+      - SERVER_ADDR=http://srv:8080/api/
+      - A
     cpus: 0.1
-  prometheus:
-    image: "prom/prometheus:latest"
-    depends_on:
-      - srv
-    networks:
-      - net
-    ports:
-      - "82:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_vol:/prometheus
-networks:
-  net:
-volumes:
-  prometheus_vol:
+secrets:
+  my_secret:
+    file: secret.txt

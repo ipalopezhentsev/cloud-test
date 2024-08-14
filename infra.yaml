@@ -1,0 +1,12 @@
+services:
+  prometheus:
+    image: "prom/prometheus:latest"
+    depends_on:
+      - srv
+    ports:
+      - "82:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_vol:/prometheus
+volumes:
+  prometheus_vol:

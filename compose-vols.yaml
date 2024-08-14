@@ -1,3 +1,5 @@
+name: test-vols
+
 services:
   svc1:
     image: alpine
